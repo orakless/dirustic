@@ -2,8 +2,9 @@ mod commands;
 mod types;
 
 use ::serenity::{all::GatewayIntents, prelude::TypeMapKey};
+use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
-use songbird::events::{Event, EventContext, EventHandler, TrackEvent};
+use songbird::events::{Event, EventContext, EventHandler};
 use std::{env, sync::Arc};
 
 use reqwest::Client as HttpClient;
@@ -14,12 +15,6 @@ struct Data {
 } // User data, which is stored and accessible in all command invocations
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
-
-struct HttpKey;
-
-impl TypeMapKey for HttpKey {
-    type Value = HttpClient;
-}
 
 struct Handler;
 struct TrackErrorNotifier;
@@ -50,6 +45,8 @@ impl EventHandler for TrackErrorNotifier {
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+
     // Login with a bot token from the environment
     let token = env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
 
