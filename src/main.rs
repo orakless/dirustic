@@ -1,5 +1,4 @@
 mod commands;
-mod services;
 
 use ::serenity::{all::GatewayIntents, prelude::TypeMapKey};
 use poise::serenity_prelude as serenity;
