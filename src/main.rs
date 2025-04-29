@@ -1,7 +1,7 @@
 mod commands;
 mod types;
 
-use ::serenity::{all::GatewayIntents, prelude::TypeMapKey};
+use ::serenity::all::GatewayIntents;
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 use songbird::events::{Event, EventContext, EventHandler};

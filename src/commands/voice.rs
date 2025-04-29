@@ -1,10 +1,24 @@
+use poise::reply;
 use songbird::TrackEvent;
+use songbird::input::Compose;
 use songbird::input::YoutubeDl;
 
 use crate::Context;
 use crate::Error;
 use crate::TrackErrorNotifier;
 use crate::types::playground::Playground;
+
+fn extract_metadata(metadata: Option<String>, replacement: String) -> String {
+    match metadata {
+        Some(value) => {
+            let mut chars = value.chars();
+            chars.next();
+            chars.next_back();
+            chars.as_str().to_string()
+        }
+        None => replacement,
+    }
+}
 
 #[poise::command(slash_command, prefix_command, guild_only)]
 pub async fn connect(ctx: Context<'_>) -> Result<(), Error> {
@@ -68,11 +82,18 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
         } else {
             YoutubeDl::new(data.http.clone(), url)
         };
-        let _ = handler.play_input(src.into());
+        let metadata = src.clone().aux_metadata().await?;
+        let _ = handler.enqueue_input(src.into()).await;
 
-        ctx.reply("Playing song").await?;
+        ctx.reply(format!(
+            "Added song [**\"{}\"**]({}) from **{}**.",
+            metadata.title.unwrap_or("Unknown media".to_string()),
+            metadata.source_url.unwrap_or("Unknown source".to_string()),
+            metadata.channel.unwrap_or("Unknown channel".to_string())
+        ))
+        .await?;
     } else {
-        ctx.reply("Not in a voice channel to play in").await?;
+        ctx.reply("Not in a voice channel to play in.").await?;
     }
 
     Ok(())
