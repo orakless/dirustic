@@ -1,4 +1,5 @@
 mod commands;
+mod types;
 
 use ::serenity::{all::GatewayIntents, prelude::TypeMapKey};
 use poise::serenity_prelude as serenity;
@@ -50,7 +51,8 @@ impl EventHandler for TrackErrorNotifier {
 #[tokio::main]
 async fn main() {
     // Login with a bot token from the environment
-    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
+    let token = env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
+
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = serenity::GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
 
