@@ -62,6 +62,7 @@ async fn main() {
                 commands::voice::connect(),
                 commands::voice::leave(),
                 commands::voice::play(),
+                commands::voice::skip(),
             ],
             prefix_options: poise::PrefixFrameworkOptions {
                 prefix: Some("!".into()),
