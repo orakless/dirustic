@@ -98,3 +98,27 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
 
     Ok(())
 }
+
+#[poise::command(prefix_command, guild_only)]
+pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
+    let playground = Playground::from(ctx);
+
+    let manager = &ctx.data().songbird;
+
+    if let Some(handler_lock) = manager.get(playground.guild_id) {
+        let handler = handler_lock.lock().await;
+
+        let song_to_skip = handler.queue().current();
+        if song_to_skip.is_none() {
+            ctx.reply("There is currently no song playing.").await?;
+            return Ok(());
+        }
+
+        ctx.reply(match handler.queue().skip() {
+            Ok(()) => "Skipped song.",
+            Err(_) => "Could not skip song.",
+        })
+        .await?;
+    }
+    Ok(())
+}
