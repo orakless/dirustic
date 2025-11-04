@@ -1,4 +1,4 @@
-use poise::reply;
+use serenity::all::EditMessage;
 use songbird::TrackEvent;
 use songbird::input::Compose;
 use songbird::input::YoutubeDl;
@@ -64,9 +64,11 @@ pub async fn leave(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-#[poise::command(prefix_command, guild_only)]
+#[poise::command(slash_command, prefix_command, guild_only)]
 pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
     let playground = Playground::from(ctx);
+
+    let answer = ctx.say("searching...").await?;
 
     let do_search = !url.starts_with("http");
 
@@ -85,15 +87,23 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
         let metadata = src.clone().aux_metadata().await?;
         let _ = handler.enqueue_input(src.into()).await;
 
-        ctx.reply(format!(
+        let edit_builder = EditMessage::new().content(format!(
             "Added song [**\"{}\"**]({}) from **{}**.",
             metadata.title.unwrap_or("Unknown media".to_string()),
             metadata.source_url.unwrap_or("Unknown source".to_string()),
             metadata.channel.unwrap_or("Unknown channel".to_string())
-        ))
-        .await?;
+        ));
+
+        answer.into_message().await?.edit(ctx, edit_builder).await?;
     } else {
-        ctx.reply("Not in a voice channel to play in.").await?;
+        answer
+            .into_message()
+            .await?
+            .edit(
+                ctx,
+                EditMessage::new().content("Not in a voice channel to play in."),
+            )
+            .await?;
     }
 
     Ok(())
