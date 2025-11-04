@@ -8,18 +8,6 @@ use crate::Error;
 use crate::TrackErrorNotifier;
 use crate::types::playground::Playground;
 
-fn extract_metadata(metadata: Option<String>, replacement: String) -> String {
-    match metadata {
-        Some(value) => {
-            let mut chars = value.chars();
-            chars.next();
-            chars.next_back();
-            chars.as_str().to_string()
-        }
-        None => replacement,
-    }
-}
-
 #[poise::command(slash_command, prefix_command, guild_only)]
 pub async fn connect(ctx: Context<'_>) -> Result<(), Error> {
     let playground = Playground::from(ctx);
