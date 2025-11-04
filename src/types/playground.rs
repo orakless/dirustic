@@ -15,9 +15,9 @@ impl From<Context<'_>> for Playground {
             .get(&ctx.author().id)
             .and_then(|voice_state| voice_state.channel_id);
 
-        return Playground {
+        Playground {
             guild_id: guild.id,
             channel_id,
-        };
+        }
     }
 }
