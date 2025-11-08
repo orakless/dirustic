@@ -8,6 +8,28 @@ use crate::Error;
 use crate::TrackErrorNotifier;
 use crate::types::playground::Playground;
 
+async fn connect_to_channel_from_ctx(ctx: Context<'_>) -> Result<(), Error> {
+    let playground = Playground::from(ctx);
+
+    let channel_id = match playground.channel_id {
+        Some(id) => id,
+        None => {
+            ctx.reply("You are not in a voice channel.").await?;
+            return Ok(());
+        }
+    };
+
+    let manager = &ctx.data().songbird;
+
+    if let Ok(handler_lock) = manager.join(playground.guild_id, channel_id).await {
+        ctx.reply("Joined!").await?;
+        let mut handler = handler_lock.lock().await;
+        handler.add_global_event(TrackEvent::Error.into(), TrackErrorNotifier)
+    }
+
+    Ok(())
+}
+
 #[poise::command(slash_command, prefix_command, guild_only)]
 pub async fn connect(ctx: Context<'_>) -> Result<(), Error> {
     connect_to_channel_from_ctx(ctx).await
