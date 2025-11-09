@@ -1,8 +1,10 @@
 use std::sync::Arc;
 use std::time::Duration;
+use poise::CreateReply;
 use songbird::Songbird;
 use crate::{Context, Error};
 use crate::types::format_duration::FormatDuration;
+use crate::types::metadata_queue::MetadataObject;
 use crate::types::playground::Playground;
 use crate::utils::extract_from_ctx;
 
@@ -24,6 +26,23 @@ pub async fn seek(ctx: Context<'_>, seconds: u64) -> Result<(), Error> {
             } else {
                 ctx.say("Can't seek back in the track.").await?;
             }
+        }
+    }
+
+    Ok(())
+}
+
+#[poise::command(prefix_command, slash_command, guild_only)]
+pub async fn now_playing(ctx: Context<'_>) -> Result<(), Error> {
+    let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
+
+    if let Some(handler_lock) = manager.get(playground.guild_id) {
+        let handler = handler_lock.lock().await;
+        if let Some(current_track) = handler.queue().current() {
+            let data = current_track.data::<MetadataObject>();
+            ctx.send(CreateReply::default().embed(data.to_embed())).await?;
+        } else {
+            ctx.say("No song currently playing").await?;
         }
     }
 
