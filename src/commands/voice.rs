@@ -37,9 +37,7 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
         let input = Track::new_with_data(src.into(), metadata.clone());
         let _ = handler.enqueue(input).await;
 
-        let edit_builder = EditMessage::new().content(format!(
-            "Added song {}", metadata
-        ));
+        let edit_builder = EditMessage::new().content("Added").embed(metadata.to_embed());
 
         answer.into_message().await?.edit(ctx, edit_builder).await?;
     } else {
