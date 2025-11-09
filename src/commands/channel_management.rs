@@ -5,7 +5,7 @@ use crate::types::playground::Playground;
 use crate::utils::{connect_to_channel_from_ctx, extract_from_ctx};
 
 #[poise::command(slash_command, prefix_command, guild_only)]
-pub async fn connect(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn join(ctx: Context<'_>) -> Result<(), Error> {
     connect_to_channel_from_ctx(ctx).await
 }
 

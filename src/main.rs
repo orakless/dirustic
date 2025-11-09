@@ -59,7 +59,7 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![
-                commands::channel_management::connect(),
+                commands::channel_management::join(),
                 commands::channel_management::leave(),
                 commands::voice::play(),
                 commands::voice::skip(),
