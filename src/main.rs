@@ -64,6 +64,7 @@ async fn main() {
                 commands::voice::play(),
                 commands::queue_management::skip(),
                 commands::queue_management::queue(),
+                commands::queue_management::remove(),
                 commands::current::seek(),
                 commands::current::now_playing(),
                 commands::current::pause(),

@@ -60,3 +60,21 @@ pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+#[poise::command(slash_command, prefix_command, guild_only)]
+pub async fn remove(ctx: Context<'_>, position: usize) -> Result<(), Error> {
+    let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
+
+    if let Some(handler_lock) = manager.get(playground.guild_id) {
+        let handler = handler_lock.lock().await;
+        let queue = handler.queue();
+
+        if let Some(track) = queue.dequeue(position - 1) {
+            let metadata = track.data::<MetadataObject>();
+            ctx.send(CreateReply::default().content("Removed song").embed(metadata.to_embed())).await?;
+        } else {
+            ctx.say("Queue is empty or not that long.").await?;
+        }
+    }
+
+    Ok(())
+}
