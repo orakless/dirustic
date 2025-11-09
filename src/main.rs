@@ -1,12 +1,12 @@
 mod commands;
 mod types;
+mod utils;
 
 use ::serenity::all::GatewayIntents;
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 use songbird::events::{Event, EventContext, EventHandler};
 use std::{env, sync::Arc};
-
 use reqwest::Client as HttpClient;
 
 struct Data {
@@ -59,8 +59,8 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![
-                commands::voice::connect(),
-                commands::voice::leave(),
+                commands::channel_management::connect(),
+                commands::channel_management::leave(),
                 commands::voice::play(),
                 commands::voice::skip(),
             ],
