@@ -1,11 +1,13 @@
-use serenity::all::EditMessage;
-use songbird::TrackEvent;
+use std::sync::Arc;
+use poise::CreateReply;
+use serenity::all::{CreateEmbed, EditMessage};
+use songbird::Songbird;
 use songbird::input::Compose;
 use songbird::input::YoutubeDl;
-
-use crate::Context;
+use songbird::tracks::Track;
+use crate::{Context, Data};
 use crate::Error;
-use crate::TrackErrorNotifier;
+use crate::types::metadata_queue::MetadataObject;
 use crate::types::playground::Playground;
 use crate::utils::{connect_to_channel_from_ctx, extract_from_ctx};
 
@@ -31,14 +33,12 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
         } else {
             YoutubeDl::new(data.http.clone(), url)
         };
-        let metadata = src.clone().aux_metadata().await?;
-        let _ = handler.enqueue_input(src.into()).await;
+        let metadata: Arc<MetadataObject> = Arc::new(src.clone().aux_metadata().await?.into());
+        let input = Track::new_with_data(src.into(), metadata.clone());
+        let _ = handler.enqueue(input).await;
 
         let edit_builder = EditMessage::new().content(format!(
-            "Added song [**\"{}\"**]({}) from **{}**.",
-            metadata.title.unwrap_or("Unknown media".to_string()),
-            metadata.source_url.unwrap_or("Unknown source".to_string()),
-            metadata.channel.unwrap_or("Unknown channel".to_string())
+            "Added song {}", metadata
         ));
 
         answer.into_message().await?.edit(ctx, edit_builder).await?;
@@ -56,7 +56,37 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
     Ok(())
 }
 
-#[poise::command(prefix_command, guild_only)]
+#[poise::command(slash_command, prefix_command, guild_only)]
+pub async fn queue(ctx: Context<'_>) -> Result<(), Error> {
+    let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
+
+    if let Some(handler_lock) = manager.get(playground.guild_id) {
+        let handler = handler_lock.lock().await;
+
+        let queue = handler.queue();
+
+        if queue.is_empty() {
+            ctx.say("Queue is empty.").await?;
+        }
+
+        let embed = CreateEmbed::new().title("Music queue")
+                .description("List of musics in the queue.");
+
+        let mut counter = 0;
+        let mut description = "".to_string();
+
+        for track in queue.current_queue() {
+            counter += 1;
+            let data = track.data::<MetadataObject>();
+            description.push_str(format!("{counter}. {data}\n").as_str());
+        }
+
+        ctx.send(CreateReply::default().embed(embed.description(description))).await?;
+    }
+
+    Ok(())
+}
+
 #[poise::command(slash_command, prefix_command, guild_only)]
 pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
