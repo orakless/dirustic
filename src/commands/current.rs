@@ -5,7 +5,7 @@ use songbird::Songbird;
 use songbird::tracks::PlayMode;
 use crate::{Context, StdError};
 use crate::types::format_duration::FormatDuration;
-use crate::types::metadata_queue::MetadataObject;
+use crate::types::metadata_queue::{MetadataObject, ToEmbed};
 use crate::types::playground::Playground;
 use crate::utils::extract_from_ctx;
 

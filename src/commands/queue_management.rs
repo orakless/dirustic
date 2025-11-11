@@ -2,8 +2,8 @@ use std::sync::Arc;
 use poise::CreateReply;
 use serenity::all::CreateEmbed;
 use songbird::Songbird;
-use crate::{Context, Error};
 use crate::{Context, StdError};
+use crate::types::metadata_queue::{MetadataObject, ToEmbed};
 use crate::types::playground::Playground;
 use crate::utils::extract_from_ctx;
 

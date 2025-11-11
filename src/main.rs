@@ -1,6 +1,7 @@
 mod commands;
 mod types;
 mod utils;
+mod dirustic_error;
 
 use ::serenity::all::GatewayIntents;
 use dotenv::dotenv;
@@ -51,7 +52,7 @@ async fn main() {
     let token = env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
 
     // Set gateway intents, which decides what events the bot will be notified about
-    let intents = serenity::GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
+    let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
 
     let manager = songbird::Songbird::serenity();
     let manager_clone = Arc::clone(&manager);
@@ -62,6 +63,7 @@ async fn main() {
                 commands::channel_management::join(),
                 commands::channel_management::leave(),
                 commands::voice::play(),
+                commands::voice::playlist(),
                 commands::queue_management::skip(),
                 commands::queue_management::queue(),
                 commands::queue_management::remove(),

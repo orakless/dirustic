@@ -15,13 +15,13 @@ pub async fn connect_to_channel_from_ctx(ctx: Context<'_>) -> Result<(), StdErro
     let channel_id = match playground.channel_id {
         Some(id) => id,
         None => {
-            ctx.reply("You are not in a voice channel.").await?;
+            ctx.say("You are not in a voice channel.").await?;
             return Ok(());
         }
     };
 
     if let Ok(handler_lock) = manager.join(playground.guild_id, channel_id).await {
-        ctx.reply("Joined!").await?;
+        ctx.say("Joined!").await?;
         let mut handler = handler_lock.lock().await;
         handler.add_global_event(TrackEvent::Error.into(), TrackErrorNotifier)
     }
