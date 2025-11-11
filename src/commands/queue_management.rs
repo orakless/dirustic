@@ -78,3 +78,19 @@ pub async fn remove(ctx: Context<'_>, position: usize) -> Result<(), StdError> {
 
     Ok(())
 }
+
+#[poise::command(slash_command, prefix_command, guild_only)]
+pub async fn clear(ctx: Context<'_>) -> Result<(), StdError> {
+    let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
+
+    if let Some(handler_lock) = manager.get(playground.guild_id) {
+        let handler = handler_lock.lock().await;
+        let queue = handler.queue();
+
+        while !queue.is_empty() {
+            queue.skip()?;
+        }
+    }
+
+    Ok(())
+}
