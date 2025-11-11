@@ -22,7 +22,7 @@ pub async fn seek(ctx: Context<'_>, seconds: u64) -> Result<(), StdError> {
             if current_track.get_info().await?.position < duration {
                 match current_track.seek_async(duration).await {
                     Ok(..) => { ctx.say(format!("Track successfully seeked to {}", FormatDuration::from(duration))).await?; }
-                    Err(err) => { ctx.say(format!("Failed to seek to {}", FormatDuration::from(duration))).await?; }
+                    Err(_) => { ctx.say(format!("Failed to seek to {}", FormatDuration::from(duration))).await?; }
                 }
             } else {
                 ctx.say("Can't seek back in the track.").await?;
