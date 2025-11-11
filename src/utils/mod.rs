@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use songbird::{Songbird, TrackEvent};
-use crate::{Context, Data, Error, TrackErrorNotifier};
+use crate::{Context, Data, StdError, TrackErrorNotifier};
 use crate::types::playground::Playground;
 
 pub fn extract_from_ctx(ctx: Context<'_>) -> (Playground, &Data, &Arc<Songbird>) {
@@ -9,7 +9,7 @@ pub fn extract_from_ctx(ctx: Context<'_>) -> (Playground, &Data, &Arc<Songbird>)
     (playground, data, &data.songbird)
 }
 
-pub async fn connect_to_channel_from_ctx(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn connect_to_channel_from_ctx(ctx: Context<'_>) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     let channel_id = match playground.channel_id {

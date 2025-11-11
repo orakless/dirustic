@@ -3,12 +3,12 @@ use poise::CreateReply;
 use serenity::all::CreateEmbed;
 use songbird::Songbird;
 use crate::{Context, Error};
-use crate::types::metadata_queue::MetadataObject;
+use crate::{Context, StdError};
 use crate::types::playground::Playground;
 use crate::utils::extract_from_ctx;
 
 #[poise::command(slash_command, prefix_command, guild_only)]
-pub async fn queue(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn queue(ctx: Context<'_>) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {
@@ -39,7 +39,7 @@ pub async fn queue(ctx: Context<'_>) -> Result<(), Error> {
 }
 
 #[poise::command(slash_command, prefix_command, guild_only)]
-pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn skip(ctx: Context<'_>) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {
@@ -61,7 +61,7 @@ pub async fn skip(ctx: Context<'_>) -> Result<(), Error> {
 }
 
 #[poise::command(slash_command, prefix_command, guild_only)]
-pub async fn remove(ctx: Context<'_>, position: usize) -> Result<(), Error> {
+pub async fn remove(ctx: Context<'_>, position: usize) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {

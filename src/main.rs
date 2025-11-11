@@ -13,8 +13,8 @@ struct Data {
     http: HttpClient,
     songbird: Arc<songbird::Songbird>,
 } // User data, which is stored and accessible in all command invocations
-type Error = Box<dyn std::error::Error + Send + Sync>;
-type Context<'a> = poise::Context<'a, Data, Error>;
+type StdError = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, StdError>;
 
 struct Handler;
 struct TrackErrorNotifier;

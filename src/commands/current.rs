@@ -3,14 +3,14 @@ use std::time::Duration;
 use poise::CreateReply;
 use songbird::Songbird;
 use songbird::tracks::PlayMode;
-use crate::{Context, Error};
+use crate::{Context, StdError};
 use crate::types::format_duration::FormatDuration;
 use crate::types::metadata_queue::MetadataObject;
 use crate::types::playground::Playground;
 use crate::utils::extract_from_ctx;
 
 #[poise::command(prefix_command, slash_command, guild_only)]
-pub async fn seek(ctx: Context<'_>, seconds: u64) -> Result<(), Error> {
+pub async fn seek(ctx: Context<'_>, seconds: u64) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {
@@ -34,7 +34,7 @@ pub async fn seek(ctx: Context<'_>, seconds: u64) -> Result<(), Error> {
 }
 
 #[poise::command(prefix_command, slash_command, guild_only)]
-pub async fn pause(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn pause(ctx: Context<'_>) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {
@@ -62,7 +62,7 @@ pub async fn pause(ctx: Context<'_>) -> Result<(), Error> {
 }
 
 #[poise::command(prefix_command, slash_command, guild_only)]
-pub async fn now_playing(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn now_playing(ctx: Context<'_>) -> Result<(), StdError> {
     let (playground, _, manager): (Playground, _, &Arc<Songbird>) = extract_from_ctx(ctx);
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {

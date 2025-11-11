@@ -7,14 +7,14 @@ use songbird::input::YoutubeDl;
 use songbird::tracks::Track;
 use crate::{Context, Data};
 use crate::Error;
-use crate::types::metadata_queue::MetadataObject;
+use crate::StdError;
 use crate::types::playground::Playground;
 use crate::utils::{connect_to_channel_from_ctx, extract_from_ctx};
 
 const ITEMS_PER_QUEUE_PAGES: usize = 10;
 
 #[poise::command(slash_command, prefix_command, guild_only)]
-pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
+pub async fn play(ctx: Context<'_>, url: String) -> Result<(), StdError> {
     let (playground, data, manager): (Playground, &Data, &Arc<Songbird>) = extract_from_ctx(ctx);
 
 
@@ -23,7 +23,7 @@ pub async fn play(ctx: Context<'_>, url: String) -> Result<(), Error> {
     }
 
     let do_search = !url.starts_with("http");
-    let answer = ctx.say("searching...").await?;
+    let answer = ctx.say("Searching...").await?;
 
     if let Some(handler_lock) = manager.get(playground.guild_id) {
         let mut handler = handler_lock.lock().await;
